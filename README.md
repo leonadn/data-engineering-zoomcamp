@@ -14,7 +14,8 @@ First data set adress:
 https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
 
 
-
+# fetching data bash
+wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
 
 
 
@@ -83,3 +84,257 @@ docker run -it \
 --network=pg-network \
 --name pgAdmin \
 dpage/pgadmin4
+
+# convert notebook to script 
+
+jupyter nbconvert --to=script from_data_set_to_posgres.ipynb
+
+
+
+
+################################ Re-do everything
+
+# Remove network
+docker network ls
+
+# Find network to remove (ID)
+docker network rm f8f0586e9772
+
+# Start network:
+docker network create pg-network
+
+
+
+
+# In order to list the Docker containers, we can use the 
+docker ps
+# or 
+docker container ls
+# In order to list images:
+docker images
+
+# List all containers
+docker ps -a
+
+# Remove container (not the iamge):
+docker rm postgresql
+
+# Start database
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/2_docker_SQL/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name postgresql \
+    postgres:14-alpine
+
+
+
+
+
+# PGAdmin GUI
+docker run -it \
+-e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+-e PGADMIN_DEFAULT_PASSWORD="root" \
+-p 8080:80 \
+--network=pg-network \
+--name pgAdmin \
+dpage/pgadmin4
+
+
+
+
+# Run script with 
+
+    python ingest_data.py\
+        --user=root\
+        --password=root\
+        --host=localhost\
+        --port=5432\
+        --db=ny_taxi\
+        --table_name=yellow_taxi_data\
+        --url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
+
+
+############################
+
+# Remove network
+docker network ls
+
+# Find network to remove (ID)
+docker network rm f8f0586e9772
+
+# Start network:
+docker network create pg-network
+
+
+
+
+# In order to list the Docker containers, we can use the 
+docker ps
+# or 
+docker container ls
+# In order to list images:
+docker images
+
+# List all containers
+docker ps -a
+
+# Remove container (not the iamge):
+docker rm postgresql
+
+# Start database
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/2_docker_SQL/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name postgresql \
+    postgres:14-alpine
+
+
+
+
+
+# PGAdmin GUI
+docker run -it \
+-e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+-e PGADMIN_DEFAULT_PASSWORD="root" \
+-p 8080:80 \
+--network=pg-network \
+--name pgAdmin \
+dpage/pgadmin4
+
+
+# Next build a docker for ingest_dsata.py, see docker_ingest ... run it:
+docker run -it --network=pg-network ingest:tagger         --user=root\
+        --password=root\
+        --host=postgresql\
+        --port=5432\
+        --db=ny_taxi\
+       --table_name=yellow_taxi_data\
+        --url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
+
+
+
+# make sure the inparameters to the docker (to the script in the docker) uses host=postgresql 
+# (its not localhost anymore since the docker you are in does not have the same localhost as your computer).
+
+
+
+##################################################### DOCKER COMPOSE
+# Instead of doing all this:
+
+# Start network:
+docker network create pg-network
+
+# Start database
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/2_docker_SQL/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name postgresql \
+    postgres:14-alpine
+
+# PGAdmin GUI
+docker run -it \
+-e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+-e PGADMIN_DEFAULT_PASSWORD="root" \
+-p 8080:80 \
+--network=pg-network \
+--name pgAdmin \
+dpage/pgadmin4
+
+# docker_ingest:
+docker run -it --network=pg-network ingest:tagger         --user=root\
+        --password=root\
+        --host=postgresql\
+        --port=5432\
+        --db=ny_taxi\
+       --table_name=yellow_taxi_data\
+        --url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
+
+
+# Do everything at once with docker compose:
+
+version: "3.0" # For some reasone you need a version here
+services:
+  pgdatabase:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - "./2_docker_SQL/ny_taxi_postgres_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+  docker_ingest:
+    build: ./docker_ingest
+    command:
+      - "--user=root"
+      - "--password=root"
+      - "--host=pgdatabase"
+      - "--port=5432"
+      - "--db=ny_taxi"
+      - "--table_name=yellow_taxi_data"
+      - "--url=https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet"
+
+# No network is needed.
+
+# Start docker compose:
+docker-compose up
+
+# Stop
+docker-compose down 
+# or
+Crl + C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TERRAFORMA AND GCP 1.3.1
+
+export GOOGLE_APPLICATION_CREDENTIALS=/Users/leonandersson/Downloads/dtc-de-358410-f41cfaae93a8.json
+# I moved it :
+/Users/leonandersson/GCloud-credentials/dtc-de-358410-f41cfaae93a8.json
+
+# Download Terraform 
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+
+
+# Create Two resources in the google invirment 
+# 1. Google Cloud Storage 
+# 2. BigQuery 
+
+# Seperet services for terraform and another for our pipline 
+
+# Activate API 
+https://console.cloud.google.com/apis/api/iam.googleapis.com/metrics?project=dtc-de-358410&authuser=1
+https://console.cloud.google.com/apis/api/iamcredentials.googleapis.com/metrics?project=dtc-de-358410&authuser=1
+

@@ -8,7 +8,8 @@ WORKDIR /app
 COPY pipeline.py pipeline.py
 
 #ENTRYPOINT [ "bash" ] # (1)
-ENTRYPOINT [ "python" , "pipeline.py" ] # (2)
+ENTRYPOINT [ "python" , "pipeline.py" ] 
+# (2)
 
 # To build:
 # docker build -t test:pandas 2_docker_SQL/ <--- since you are standing at root

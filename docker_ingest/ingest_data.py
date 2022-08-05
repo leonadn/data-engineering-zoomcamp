@@ -1,4 +1,5 @@
 import argparse
+import time
 from pydoc import describe
 import pandas as pd
 from sqlalchemy import create_engine
@@ -24,6 +25,7 @@ def main(args):
 
 def ingest_data(args):
     # Create connection to database
+    time.sleep(180)
     engine = create_engine(f"postgresql://{args.user}:{args.password}@{args.host}:{args.port}/{args.db}")
 
     # Load file
@@ -34,6 +36,10 @@ def ingest_data(args):
 
     # Create iterator
     df_iter = pd.read_csv(f"{file_name}.csv", iterator = True, chunksize = chunksize)
+
+    # Clear table
+    df = pd.read_csv(f"{file_name}.csv", nrows = 0)
+    df.to_sql(name = args.table_name, con = engine, if_exists = "replace")
 
     # Iternate and upload
     while (True):

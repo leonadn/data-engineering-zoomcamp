@@ -44,7 +44,12 @@ docker run -it \
     postgres:14-alpine
 
 
-# LOG IN VIA POSTGRES CLIENT (PGCLI): pgcli -h localhost -u root -d ny_taxi 
+# LOG IN VIA POSTGRES CLIENT (PGCLI): 
+pgcli -h localhost -u root -d ny_taxi 
+
+# FOr postGres port 5432 is default BUT could be something else:
+pgcli -h localhost -p 5432 -u root -d ny_taxi
+
 # MAKE SURE U ARE USING CONDA ENV TEST_PGCLI
 # LIST ALL TABELS \dt
 # LIST ALL ALL TABLES: SELECT * FROM pg_catalog.pg_tables;
@@ -337,4 +342,67 @@ brew install hashicorp/tap/terraform
 # Activate API 
 https://console.cloud.google.com/apis/api/iam.googleapis.com/metrics?project=dtc-de-358410&authuser=1
 https://console.cloud.google.com/apis/api/iamcredentials.googleapis.com/metrics?project=dtc-de-358410&authuser=1
+
+
+
+
+# LOG IN to pgadmin:
+
+  pgdatabase: <---------------------------------- this is the name 
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=root <-------------------------use 
+      - POSTGRES_PASSWORD=root <-----pass
+      - POSTGRES_DB=ny_taxi <-- this is autmatic
+    volumes:
+      - "./2_docker_SQL/ny_taxi_postgres_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+
+
+# open GUI pgadim
+localhost 8080
+# Close this one before restart
+
+
+
+
+# home work
+select count(*) FROM yellow_taxi_data 
+where tpep_dropoff_datetime::date = '2021-01-15';
+
+
+# TODO:
+FREDAG:
+istället för att göra vm machine for google ... det kostar nog pengar. 
+gör det på din dator hemma istället :) 
+SÅ 1.4.1
+och igen testa lite på 1.4.2
+Sen är du klar med kappitel 1 (week 1)
+
+
+
+
+# VM machine 1.4.1
+ # 1. Create ssh key for machine 
+ ssh-keygen -t rsa -f gcp_course -C "leonadn" -b 2048
+ # pass: EMPTY as in nothing 
+ # It creates two keys:
+gcp_course (private)
+gcp_course.pub (public)
+# 2. put public key to google cloud and create machine.
+# GO to to meta data and add ssh-key
+# Go to VM instance and create machine
+# ubuntu 20.04 20gb
+# Bulid
+# copy ssh key the machine is given
+# go back to your computer and 
+ssh -i ~/.ssh/gcp_course leonadn@35.240.71.31
+
+# you create config file for ssh
+# just now run
+ssh de-zoomcamp
+# install docker (sudo apt-get update .... sudo apt-get docker.io) and make ut run without sudo
+
+
 

@@ -1,0 +1,3 @@
+2_docker_SQL/ny_taxi_postgres_data/*
+airflow/dags/__pycach*
+airflow/logs/*

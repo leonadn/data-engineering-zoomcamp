@@ -50,6 +50,11 @@ pgcli -h localhost -u root -d ny_taxi
 # FOr postGres port 5432 is default BUT could be something else:
 pgcli -h localhost -p 5432 -u root -d ny_taxi
 
+# to use PGcli:
+conda create --no-default-packages -n test_pgcli python
+conda activate test_pgcli
+conda install -n test_pgcli -c conda-forge pgcli
+
 # MAKE SURE U ARE USING CONDA ENV TEST_PGCLI
 # LIST ALL TABELS \dt
 # LIST ALL ALL TABLES: SELECT * FROM pg_catalog.pg_tables;
@@ -370,6 +375,7 @@ localhost 8080
 # home work
 select count(*) FROM yellow_taxi_data 
 where tpep_dropoff_datetime::date = '2021-01-15';
+51977
 
 
 # TODO:
@@ -399,10 +405,22 @@ gcp_course.pub (public)
 # go back to your computer and 
 ssh -i ~/.ssh/gcp_course leonadn@35.240.71.31
 
-# you create config file for ssh
+# you create config for ssh
 # just now run
 ssh de-zoomcamp
 # install docker (sudo apt-get update .... sudo apt-get docker.io) and make ut run without sudo
 
 
+# when you stop the VM you will get a new IP when restarted.
+# The vm is stopped. the only thing that you will be charge with is the storage ... he said a few cents per month ... ok so top 11kr per month max 33kr in total. 
 
+
+# You should start at week 2. 
+
+
+
+
+
+# Konto hos amazon 
+user: leondavidandersson@gmail.com  
+pass: Leon@amazon1234

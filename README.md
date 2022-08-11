@@ -424,3 +424,19 @@ ssh de-zoomcamp
 # Konto hos amazon 
 user: leondavidandersson@gmail.com  
 pass: Leon@amazon1234
+
+
+
+# When you log in to postgresql docker (compose) from first week wia docker from second, use:
+docker exec -it a9864cfae8a7 bash (the worker)
+pgcli -h data-engineering-zoomcamp-pgdatabase-1 -p 5432 -u root -d ny_taxi
+or use python:
+>>> engine = create_engine(f'postgresql://root:root@data-engineering-zoomcamp-pgdatabase-1:5432/ny_taxi')
+>>> engine.connect()
+<sqlalchemy.engine.base.Connection object at 0x7f981e162610>
+>>> 
+
+You are at : 1:04:00 , 2.3.3
+
+
+
